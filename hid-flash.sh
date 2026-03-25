@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Use the correct dfu-util program based on the host
+# Use the correct hid-flash program based on the host
 #
 
 # Get the directory where the script is running.
@@ -8,14 +8,14 @@ DIR=$(cd "$(dirname "$0")" && pwd)
 UNAME_OS="$(uname -s)"
 case "${UNAME_OS}" in
   Linux*)
-    # Choose dfu program by arch
+    # Choose program by arch
     UNAME_ARCH="$(uname -m)"
     case "${UNAME_ARCH}" in
       x86_64)
-        DFU_UTIL=${DIR}/linux/x86_64/dfu-util
+        HID_FLASH=${DIR}/linux/x86_64/hid-flash
         ;;
       aarch64|arm64)
-        DFU_UTIL=${DIR}/linux/aarch64/dfu-util
+        HID_FLASH=${DIR}/linux/aarch64/hid-flash
         ;;
       *)
         echo "Unsupported Linux architecture: ${UNAME_ARCH}."
@@ -24,13 +24,10 @@ case "${UNAME_OS}" in
     esac
     ;;
   Darwin*)
-    DFU_UTIL=${DIR}/macosx/dfu-util
-    if [ ! -x "${DFU_UTIL}" ]; then
-      DFU_UTIL=/opt/local/bin/dfu-util
-    fi
+    HID_FLASH=${DIR}/macosx/hid-flash
     ;;
   Windows*)
-    DFU_UTIL=${DIR}/win/dfu-util.exe
+    HID_FLASH=${DIR}/win/hid-flash.exe
     ;;
   *)
     echo "Unknown host OS: ${UNAME_OS}."
@@ -39,10 +36,10 @@ case "${UNAME_OS}" in
 esac
 
 # Not found!
-if [ ! -x "${DFU_UTIL}" ]; then
-  echo "$0: error: cannot find ${DFU_UTIL}" >&2
+if [ ! -x "${HID_FLASH}" ]; then
+  echo "$0: error: cannot find ${HID_FLASH}" >&2
   exit 2
 fi
 
 # Pass all parameters through
-"${DFU_UTIL}" "$@"
+"${HID_FLASH}" "$@"
